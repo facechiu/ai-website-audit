@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ai-website-audit
+    runtime: node
+    plan: free
+    buildCommand: ""
+    startCommand: "node server.js"
+    envVars:
+      - key: NODE_VERSION
+        value: 24.16.0
+      - key: RATE_LIMIT_MAX
+        value: "12"

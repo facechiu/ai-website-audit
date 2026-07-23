@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 官網健檢工具</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">AI Website Readiness Audit</p>
+          <h1>你的官網，AI 看得懂嗎？</h1>
+          <p class="lead">輸入網址，快速檢查 SEO 基礎、AI 可讀性、信任訊號與轉換引導，找出阻礙 ChatGPT、Google AI、Perplexity 理解你的關鍵缺口。</p>
+          <div class="proof-row" aria-label="檢查項目">
+            <span>robots.txt</span>
+            <span>sitemap.xml</span>
+            <span>llms.txt</span>
+            <span>JSON-LD</span>
+          </div>
+        </div>
+        <form id="audit-form" class="audit-box">
+          <div class="form-heading">
+            <p class="eyebrow">Free Scan</p>
+            <h2>免費 AI 官網健檢</h2>
+          </div>
+          <label for="url">網站網址</label>
+          <div class="input-row">
+            <input id="url" name="url" placeholder="例如：https://example.com" autocomplete="url" required />
+            <button type="submit">開始健檢</button>
+          </div>
+          <p class="hint">本機原型會讀取公開網頁、robots.txt、sitemap.xml、llms.txt，不需要登入。</p>
+        </form>
+      </section>
+
+      <section id="loading" class="loading hidden">
+        <div class="radar">
+          <span></span>
+          <span></span>
+          <span></span>
+          <strong>AI</strong>
+        </div>
+        <div>
+          <h2>正在掃描網站訊號</h2>
+          <p id="scan-line">檢查首頁是否可被讀取...</p>
+        </div>
+      </section>
+
+      <section id="results" class="results hidden">
+        <div class="score-panel">
+          <div>
+            <p class="eyebrow">Audit Result</p>
+            <h2 id="site-title">AI 官網健檢報告</h2>
+            <p id="site-meta"></p>
+          </div>
+          <div class="score-ring">
+            <span id="overall-score">--</span>
+            <small>總分</small>
+          </div>
+        </div>
+
+        <div id="category-grid" class="category-grid"></div>
+
+        <div class="two-col">
+          <section class="panel">
+            <h3>最需要修的 5 件事</h3>
+            <div id="issues"></div>
+          </section>
+          <section class="panel accent-panel">
+            <h3>可交給客戶看的結論</h3>
+            <div id="summary" class="summary-copy"></div>
+            <button id="copy-summary" type="button" class="secondary">複製結論</button>
+          </section>
+        </div>
+      </section>
+    </main>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
