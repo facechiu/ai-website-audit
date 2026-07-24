@@ -132,12 +132,6 @@ label {
   font-weight: 800;
 }
 
-.input-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-}
-
 input,
 button {
   min-height: 52px;
@@ -157,6 +151,30 @@ input {
 input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.16);
+}
+
+.audit-box > input,
+.audit-box > button,
+.field-grid {
+  margin-bottom: 16px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.field-grid label {
+  margin-bottom: 0;
+}
+
+.field-grid input {
+  margin-top: 10px;
+}
+
+.audit-box button[type="submit"] {
+  width: 100%;
 }
 
 button {
@@ -308,6 +326,40 @@ button.secondary {
   gap: 14px;
 }
 
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.insight-card {
+  min-height: 150px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  background: var(--panel-2);
+  padding: 18px;
+  box-shadow: 0 12px 32px rgba(46, 42, 36, 0.08);
+}
+
+.insight-card p {
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.insight-card strong {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.insight-card span {
+  color: #5c5146;
+  line-height: 1.6;
+}
+
 .category {
   min-height: 190px;
   border: 1px solid var(--line-soft);
@@ -397,7 +449,8 @@ button.secondary {
     grid-template-columns: 1fr 1fr;
   }
 
-  .input-row {
+  .field-grid,
+  .insight-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -408,7 +461,8 @@ button.secondary {
     padding: 24px 0;
   }
 
-  .category-grid {
+  .category-grid,
+  .insight-grid {
     grid-template-columns: 1fr;
   }
 
