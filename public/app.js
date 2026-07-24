@@ -3,17 +3,18 @@ const loading = document.querySelector("#loading");
 const results = document.querySelector("#results");
 const scanLine = document.querySelector("#scan-line");
 const categoryGrid = document.querySelector("#category-grid");
+const insightGrid = document.querySelector("#insight-grid");
 const issues = document.querySelector("#issues");
 const summary = document.querySelector("#summary");
 const copySummary = document.querySelector("#copy-summary");
 
 const scanLines = [
-  "檢查首頁是否可被讀取...",
-  "讀取 robots.txt 與 AI 爬蟲規則...",
-  "尋找 sitemap.xml 與 llms.txt...",
-  "分析 Meta、H1、Open Graph...",
-  "檢查 JSON-LD 與信任訊號...",
-  "整理修復建議..."
+  "讀取首頁與公開檔案...",
+  "檢查 robots.txt、sitemap.xml、llms.txt...",
+  "整理品牌事實與服務線索...",
+  "模擬買家會問 AI 的問題...",
+  "比對競爭對手風險...",
+  "產生可銷售的修復建議..."
 ];
 
 let latestSummary = "";
@@ -27,16 +28,49 @@ function escapeHtml(value) {
 }
 
 function scoreTone(score) {
-  if (score >= 80) return "基礎不錯，適合進一步放大 AI 搜尋曝光。";
-  if (score >= 60) return "有基本架構，但還有幾個關鍵缺口會影響 AI 理解與引用。";
-  return "目前官網對 AI 不夠友善，容易讓 AI 看不懂服務、信任度與推薦理由。";
+  if (score >= 85) return "AI 已經能抓到多數關鍵線索，適合拿來放大曝光。";
+  if (score >= 70) return "基礎不差，但還需要補強品牌事實、FAQ 或信任證據。";
+  if (score >= 50) return "AI 可能看得懂一部分，但推薦理由還不夠完整。";
+  return "目前 AI 很可能難以理解你是誰、服務誰，以及為什麼值得推薦。";
+}
+
+function renderInsightCards(data) {
+  const insights = data.insights || {};
+  const cards = [
+    {
+      title: "AI 推薦可能性",
+      value: insights.recommendationReadiness || "待補強",
+      text: insights.recommendationReason || "需要更多品牌事實與可引用內容。"
+    },
+    {
+      title: "買家會問的問題",
+      value: `${(insights.buyerQuestions || []).length} 題`,
+      text: (insights.buyerQuestions || []).slice(0, 2).join(" / ") || "補上品牌與產業後會更精準。"
+    },
+    {
+      title: "競品風險",
+      value: insights.competitorRisk || "中",
+      text: insights.competitorReason || "若競爭對手有更完整內容，AI 可能優先引用他們。"
+    }
+  ];
+
+  insightGrid.innerHTML = cards.map((card) => `
+    <article class="insight-card">
+      <p>${escapeHtml(card.title)}</p>
+      <strong>${escapeHtml(card.value)}</strong>
+      <span>${escapeHtml(card.text)}</span>
+    </article>
+  `).join("");
 }
 
 function render(data) {
   document.querySelector("#overall-score").textContent = data.overall;
   document.querySelector(".score-ring").style.setProperty("--angle", `${data.overall * 3.6}deg`);
   document.querySelector("#site-title").textContent = data.signals.title || data.input;
-  document.querySelector("#site-meta").textContent = `${data.input} · 首頁狀態 ${data.signals.status || "未知"} · 初始 HTML 文字量 ${data.signals.wordCount} words${data.signals.scriptHeavy ? " · 偵測到前端渲染風險" : ""}`;
+  document.querySelector("#site-meta").textContent =
+    `${data.input} · 首頁狀態 ${data.signals.status || "未知"} · 初始 HTML 文字量 ${data.signals.wordCount} words`;
+
+  renderInsightCards(data);
 
   categoryGrid.innerHTML = data.categories.map((category) => `
     <article class="category">
@@ -58,17 +92,20 @@ function render(data) {
         <p>${escapeHtml(issue.fix)}</p>
       </div>
     `).join("")
-    : `<p class="summary-copy">主要基礎訊號都已具備，下一步可優化內容深度、案例與 AI 引用格式。</p>`;
+    : `<p class="summary-copy">基礎訊號完整。下一步建議開始追蹤 AI 是否實際提到你、引用誰，以及競爭對手是否更常被推薦。</p>`;
 
   const issueText = data.topIssues.map((issue) => `「${issue.label}」`).slice(0, 3).join("、");
-  const renderWarning = data.signals.scriptHeavy ? "另外，這個網站的主內容可能高度依賴 JavaScript，部分 AI 爬蟲或搜尋爬蟲讀到的內容會比使用者看到的少。" : "";
-  latestSummary = `這個網站的 AI 官網健檢總分為 ${data.overall} 分。${scoreTone(data.overall)}目前最需要優先處理的是 ${issueText || "內容深度與轉換引導"}。${renderWarning}建議把官網調整成 AI 更容易理解的格式：補齊結構化資料、明確說明服務與信任證據，並加入可被 AI 摘要引用的問答式內容。`;
+  const questions = (data.insights?.buyerQuestions || []).slice(0, 2).join("；");
+  latestSummary =
+    `這個網站的 AI 品牌能見度健檢總分為 ${data.overall} 分。${scoreTone(data.overall)} ` +
+    `若買家問 AI：「${questions || "這個產業有哪些品牌值得推薦？"}」，目前最需要優先補強的是 ${issueText || "持續監測 AI 提及率與引用來源"}。` +
+    `建議把官網調整成 AI 更容易引用的格式：清楚寫出品牌事實、服務對象、差異化、案例證據、FAQ 與結構化資料。`;
   summary.textContent = latestSummary;
 }
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const url = new FormData(form).get("url");
+  const payload = Object.fromEntries(new FormData(form).entries());
   results.classList.add("hidden");
   loading.classList.remove("hidden");
 
@@ -83,10 +120,10 @@ form.addEventListener("submit", async (event) => {
     const res = await fetch("/api/audit", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ url })
+      body: JSON.stringify(payload)
     });
     const data = await res.json();
-    if (!res.ok || data.error) throw new Error(data.error || "掃描失敗");
+    if (!res.ok || data.error) throw new Error(data.error || "健檢失敗");
     render(data);
     results.classList.remove("hidden");
   } catch (error) {
