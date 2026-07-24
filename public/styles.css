@@ -200,6 +200,22 @@ button.secondary {
   box-shadow: none;
 }
 
+button.secondary.outline {
+  margin-top: 10px;
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+button.secondary.outline:hover {
+  background: rgba(255, 250, 240, 0.54);
+}
+
+.action-stack {
+  display: grid;
+  gap: 0;
+}
+
 .hint,
 #site-meta {
   margin: 12px 0 0;
